@@ -1,21 +1,61 @@
 <?php
+/**
+ * FTPClient
+ * @author  Kerash <blog@kerash.tw>
+ * @copyright MIT License
+ * @date    2015/09/21
+ * @version 1.0.0 建立基本功能
+ */
 namespace kerash\FTPClient;
 
 require_once "FTP.class.php";
 
 class FTPClient implements FTP {
-    private $FTPClientError = false;
+    /**
+     * FTPClient 最後錯誤訊息
+     * @var string
+     */
+    private $FTPClientError = "";
 
+    /**
+     * 是否使用加密方式連線
+     * @var boolean
+     */
     private $is_security_connection = false;
+
+    /**
+     * FTP 連線埠
+     * @var integer
+     */
     private $default_ftp_port = 21;
+    /**
+     * 當前 FTP 連線物件
+     * @var null
+     */
     private $ftp_connection = null;
 
+    /**
+     * 目前連線狀態
+     * @var boolean
+     */
     private $is_connected = false;
+
+    /**
+     * 使用者登入狀態
+     * @var boolean
+     */
     private $is_logined   = false;
 
+    /**
+     * 當前 ftp server host
+     * @var string
+     */
     private $ftp_host = "";
 
-
+    /**
+     * 使用者當前路徑
+     * @var string
+     */
     private $_current = "";
 
     function __construct() {
@@ -39,7 +79,7 @@ class FTPClient implements FTP {
      * 建立 FTP 連線
      * @param  string  $server
      * @param  boolean $use_ssl
-     * @return [type]
+     * @return null
      */
     function open($server, $use_ssl = false) {
         $url_param = parse_url($server);
@@ -163,8 +203,8 @@ class FTPClient implements FTP {
 
     /**
      * 切換目錄
-     * @param  [type] $folder
-     * @return [type]
+     * @param  string $folder
+     * @return bool
      */
     function _chdir($folder) {
         if(@ftp_chdir($this->ftp_connection, $folder)) {
@@ -178,9 +218,9 @@ class FTPClient implements FTP {
     /**
      * 切換目錄， alias of _chdir
      * @param  string $folder
-     * @return [type]
+     * @return bool
      */
-    function _cd($folder = ".") {
+    function _cd($folder) {
         if($this->_chdir($folder)) {
             return true;
         } else {
@@ -227,7 +267,7 @@ class FTPClient implements FTP {
         if(method_exists($this, "_{$funcName}")) {
             return call_user_method("_{$funcName}", $this, count($args)==0? null : $args[0]);
         } else {
-            throw new \Exception("command not found.");
+            throw new \Exception("Command [{$funcName}] not found.");
         }
     }
 
