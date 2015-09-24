@@ -146,7 +146,7 @@ class FTPClient implements FTP {
     }
 
     function _put($file, $target) {
-
+       return ftp_put($this->ftp_connection, $target, $file, FTP_BINARY);
     }
 
     /**
@@ -265,7 +265,11 @@ class FTPClient implements FTP {
             throw new \Exception("You're not login ftp yet.");
         }
         if(method_exists($this, "_{$funcName}")) {
-            return call_user_method("_{$funcName}", $this, count($args)==0? null : $args[0]);
+            if(count($args)<=1) {
+                return call_user_func_array(array($this, "_{$funcName}"), count($args[0])==0?null:$args);
+            } else {
+                return call_user_func_array(array($this, "_{$funcName}"), $args);
+            }
         } else {
             throw new \Exception("Command [{$funcName}] not found.");
         }
